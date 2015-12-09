@@ -3,6 +3,9 @@ package gossip
 import "time"
 
 type GossipMessage struct {
+  To GossipMember
+  From GossipMember
+  payload []byte
 }
 
 func StartGossip(conf GossipConf) (received, outbound chan GossipMessage, err error) {
