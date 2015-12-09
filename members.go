@@ -5,6 +5,7 @@ type GossipMember struct {
 
 type MemberHandler interface {
 	GetMembers(uint) []GossipMember
+	GetAllMembers() []GossipMember
 }
 
 type MemoryMemberHandler struct {

@@ -17,6 +17,3 @@ func round(cxt gossipContext) {
 
 }
 
-func requestSync(cxt gossipContext) {
-
-}

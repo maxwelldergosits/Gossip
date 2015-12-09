@@ -41,6 +41,7 @@ func handleMessage(cxt gossipContext, gossip Gossip) {
 	} else {
 		//forwardMessage(cxt, message)
 	}
+
 	updateMember(cxt.MemberHandler(), gossip.message.From)
 	for _, member := range gossip.members {
 		updateMember(cxt.MemberHandler(), member)
