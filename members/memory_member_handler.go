@@ -76,6 +76,7 @@ func (m * MemoryMemberHandler) DeleteExpired(round, expireThreshold MemberHeartb
 }
 
 func(m * MemoryMemberHandler)	GetMembers(n uint) []GossipMember {
+  if ( n > uint(len(m.list))) { n = uint(len(m.list)) }
   r := rand.New(rand.NewSource(99))
   members := make([]GossipMember, 0, n)
   var i uint = 0

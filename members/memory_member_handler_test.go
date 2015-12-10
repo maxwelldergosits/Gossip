@@ -221,6 +221,16 @@ func TestGetN(t *testing.T) {
     t.Log("got too many random members")
   }
 
+	testHandler = CreateMemoryMemberHandler()
+
+  l  = len(testHandler.GetMembers(10))
+
+  if l != 0 {
+    t.Log("GetMembers: got",l, "wanted",0 )
+    t.Fail()
+  }
+
+
 }
 
 func TestGetAll(t *testing.T) {

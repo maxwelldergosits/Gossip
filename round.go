@@ -8,12 +8,15 @@ import "gossip/members"
 type rounder interface {
   Conf() GossipConf
   MemberHandler() members.MemberHandler
+  Outbound() chan Gossip
+
+
 }
 
-func SendRoundMessage(r rounder) Gossip {
+func SendRoundMessage(r rounder) {
 	members := r.MemberHandler().GetMembers(r.Conf().RoundSize + 1)
-
-	return Gossip{
+  if (len(members) == 0) {return}
+	r.Outbound() <- Gossip{
 		Type: DataMessage,
 		Message: GossipMessage{
 			To:   members[0],
