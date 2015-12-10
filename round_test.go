@@ -24,7 +24,7 @@ func TestSendRoundMessage(t *testing.T) {
 
 	h := members.CreateMemoryMemberHandler()
 	for i := 0; i < 15; i++ {
-		h.Add(members.GossipMember{ID: members.MemberID(i)})
+		h.Add(members.GossipMember{ID: members.NewID(uint64(i),0)})
 	}
 
 	ts := &TestRounder{m: &h, c: GossipConf{RoundSize: 10}, o: make(chan Gossip, 10)}

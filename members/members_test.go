@@ -2,19 +2,17 @@ package members
 
 import "testing"
 
-
-func TestUpdateMember (t * testing.T) {
-
+func TestUpdateMember(t *testing.T) {
 
 	testHandler := CreateMemoryMemberHandler()
 
 	m := GossipMember{
-		ID:        50,
+		ID:        NewID(50, 0),
 		heartbeat: 1,
 		lastheard: 1,
 	}
 
-  UpdateMember(&testHandler, m, 1)
+	UpdateMember(&testHandler, m, 1)
 
 	_, exists := testHandler.Find(m.ID)
 
@@ -23,23 +21,31 @@ func TestUpdateMember (t * testing.T) {
 		t.Fail()
 	}
 
-  UpdateMember(&testHandler, m, 10)
+	UpdateMember(&testHandler, m, 10)
 
 	mem, exists := testHandler.Find(m.ID)
 
 	if !exists || mem.lastheard != 1 {
-		t.Log("member with ID", m.ID, "wasn't found with correct lastheard at, wanted",1,"got",mem.lastheard)
+		t.Log("member with ID", m.ID, "wasn't found with correct lastheard at, wanted", 1, "got", mem.lastheard)
 		t.Fail()
 	}
 
-  m.heartbeat = 20
-  UpdateMember(&testHandler, m, 10)
+	m.heartbeat = 20
+	UpdateMember(&testHandler, m, 10)
 
 	mem, exists = testHandler.Find(m.ID)
 
 	if !exists || mem.lastheard != 10 {
-		t.Log("member with ID", m.ID, "wasn't found with correct lastheard at, wanted",10,"got",mem.lastheard)
+		t.Log("member with ID", m.ID, "wasn't found with correct lastheard at, wanted", 10, "got", mem.lastheard)
 		t.Fail()
 	}
 
+}
+
+func TestNewID(t *testing.T) {
+
+	m := NewID(1, 2)
+	if m.upper != 1 || m.lower != 2 {
+		t.Fail()
+	}
 }

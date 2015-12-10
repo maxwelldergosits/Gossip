@@ -20,10 +20,10 @@ func TestSync(t *testing.T) {
 
 	h := members.CreateMemoryMemberHandler()
 
-	h.Add(members.GossipMember{ID: 50})
+	h.Add(members.GossipMember{ID: members.NewID(50,0)})
 
 	ts := &TestSyncer{m: &h}
-	to := members.GossipMember{ID: 51}
+	to := members.GossipMember{ID: members.NewID(51,0)}
 	res := Sync(ts, to, DataMessage)
 
 	if res.Message.To != to || res.Type != DataMessage {
@@ -32,7 +32,7 @@ func TestSync(t *testing.T) {
 		t.Fail()
 	}
 
-	if (len(res.Members) != 1 || res.Members[0] != members.GossipMember{ID: 50}) {
+	if (len(res.Members) != 1 || res.Members[0] != members.GossipMember{ID: members.NewID(50,0)}) {
 		t.Log("len(res.Members)= ", len(res.Members))
 		t.Fail()
 	}
@@ -43,7 +43,7 @@ func TestRequestSync(t *testing.T) {
 
 	h := members.CreateMemoryMemberHandler()
 
-	h.Add(members.GossipMember{ID: 50})
+	h.Add(members.GossipMember{ID: members.NewID(50,0)})
 
 	ts := &TestSyncer{m: &h}
 	res := RequestSync(ts)
@@ -53,7 +53,7 @@ func TestRequestSync(t *testing.T) {
 		t.Fail()
 	}
 
-	if (len(res.Members) != 1 || res.Members[0] != members.GossipMember{ID: 50}) {
+	if (len(res.Members) != 1 || res.Members[0] != members.GossipMember{ID: members.NewID(50,0)}) {
 		t.Log("len(res.Members)= ", len(res.Members))
 		t.Fail()
 	}

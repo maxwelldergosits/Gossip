@@ -4,9 +4,9 @@ import "gossip/members"
 import "testing"
 
 func TestRequestJoin(t *testing.T) {
-	var a members.MemberAddress = members.MemberAddress(4)
+	var a members.MemberAddress = members.MemberAddress{IP:0x12345678, UDPPort:0x4545, TCPPort:0x5454}
 
-	s := members.GossipMember{ID: 8}
+	s := members.GossipMember{ID: members.NewID(8,0)}
 
 	res := RequestJoin(a, s)
 	if res.Type != JoinRequest {

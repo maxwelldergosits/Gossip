@@ -1,11 +1,22 @@
 package members
+
 type MemberStatus int
 
-//TODO figure out UUID stuff
-type MemberID uint64
+type MemberID struct {
+	upper uint64
+	lower uint64
+}
 
-//TODO figure out address stuff
-type MemberAddress int
+func NewID(up, lo uint64) MemberID {
+	return MemberID{up, lo}
+}
+
+// FOR NOW IPV4 only
+type MemberAddress struct {
+	IP      uint32
+	UDPPort uint16
+	TCPPort uint16
+}
 
 type MemberHeartbeat uint64
 
@@ -28,11 +39,6 @@ type MemberHandler interface {
 	Add(GossipMember)
 	Find(MemberID) (GossipMember, bool)
 }
-
-func (m *GossipMember) ToBytes() []byte {
-	return []byte{}
-}
-
 
 func UpdateMember(handler MemberHandler, member GossipMember, round MemberHeartbeat) {
 
@@ -59,5 +65,3 @@ func UpdateMember(handler MemberHandler, member GossipMember, round MemberHeartb
 		})
 	}
 }
-
-

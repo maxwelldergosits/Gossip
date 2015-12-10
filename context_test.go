@@ -22,6 +22,12 @@ func TestGossipContext(t *testing.T) {
 	cxt.SetMemberHandler(&h)
 	cxt.SetRound(r)
 
+  if cxt.Outbound() != cxt.outbound {
+		t.Fail()
+  }
+  if cxt.Inbound() != cxt.inbound {
+		t.Fail()
+  }
 	if cxt.OutboundMessages() != xm {
 		t.Fail()
 	}

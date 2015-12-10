@@ -17,3 +17,5 @@ type Gossip struct {
 	Message GossipMessage
 	Members []members.GossipMember
 }
+
+
