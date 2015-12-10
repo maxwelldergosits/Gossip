@@ -55,7 +55,6 @@ func startGossip(cxt GossipContext) {
 			cxt.Outbound() <- Gossip{
 				Type:    DataMessage,
 				Message: msg,
-				Members: []members.GossipMember{},
 			}
 
 		}
