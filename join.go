@@ -1,9 +1,11 @@
 package gossip
 
-func RequestJoin(address MemberAddress, self GossipMember) Gossip {
+import "gossip/members"
 
-	temp := GossipMember{
-		address: address,
+func RequestJoin(address members.MemberAddress, self members.GossipMember) Gossip {
+
+	temp := members.GossipMember{
+		Address: address,
 	}
 	return Gossip{
 		Type: JoinRequest,
@@ -13,16 +15,4 @@ func RequestJoin(address MemberAddress, self GossipMember) Gossip {
 		},
 	}
 
-}
-
-func HandleJoin(cxt GossipContext, g Gossip) {
-
-	cxt.Outbound() <- Gossip{
-		Type: DataMessage,
-		Message: GossipMessage{
-			To:   g.Message.From,
-			From: cxt.Conf().Self,
-		},
-		Members: cxt.MemberHandler().GetAllMembers(),
-	}
 }

@@ -1,22 +1,25 @@
 package gossip
+import "gossip/members"
 
 /*
   Generates a message containing cxt.Conf().RoundSize members.
   To be sent over a UDP connection and is assumed to be an unreliable message.
 */
-func SendRoundMessage(cxt GossipContext) {
+type rounder interface {
+  Conf() GossipConf
+  MemberHandler() members.MemberHandler
+}
 
-	members := cxt.MemberHandler().GetMembers(cxt.Conf().RoundSize + 1)
+func SendRoundMessage(r rounder) Gossip {
+	members := r.MemberHandler().GetMembers(r.Conf().RoundSize + 1)
 
-	msg := Gossip{
+	return Gossip{
 		Type: DataMessage,
 		Message: GossipMessage{
 			To:   members[0],
-			From: cxt.Conf().Self,
+			From: r.Conf().Self,
 		},
 		Members: members[1:],
 	}
-
-	cxt.Outbound() <- msg
 
 }

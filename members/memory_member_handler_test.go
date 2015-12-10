@@ -1,22 +1,23 @@
-package gossip
+package members
 
 import "testing"
 
 func TestAdd(t *testing.T) {
 
+
 	testHandler := CreateMemoryMemberHandler()
 	m := GossipMember{
-		id:        50,
+		ID:        50,
 		heartbeat: 1,
 		lastheard: 1,
 	}
 
 	testHandler.Add(m)
 
-	mem_ret, exists := testHandler.Find(m.id)
+	mem_ret, exists := testHandler.Find(m.ID)
 
 	if !exists {
-		t.Log("member with id", m.id, "wasn't returned")
+		t.Log("member with ID", m.ID, "wasn't returned")
 		t.Fail()
 	}
 
@@ -26,13 +27,13 @@ func TestAdd(t *testing.T) {
 	}
 
   for i:= 100; i < 10000; i++ {
-    m.id = MemberID(i)
+    m.ID = MemberID(i)
     testHandler.Add(m)
 
-    mem_ret, exists := testHandler.Find(m.id)
+    mem_ret, exists := testHandler.Find(m.ID)
 
     if !exists {
-      t.Log("member with id", m.id, "wasn't returned")
+      t.Log("member with ID", m.ID, "wasn't returned")
       t.Fail()
     }
 
@@ -47,17 +48,17 @@ func TestAdd(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	testHandler := CreateMemoryMemberHandler()
 	m := GossipMember{
-		id:        50,
+		ID:        50,
 		heartbeat: 1,
 		lastheard: 1,
 	}
 
 	testHandler.Add(m)
 
-	mem_ret, exists := testHandler.Find(m.id)
+	mem_ret, exists := testHandler.Find(m.ID)
 
 	if !exists {
-		t.Log("member with id", m.id, "wasn't returned")
+		t.Log("member with ID", m.ID, "wasn't returned")
 		t.Fail()
 	}
 
@@ -71,10 +72,10 @@ func TestUpdate(t *testing.T) {
 
 	testHandler.Add(m)
 
-	mem_ret, exists = testHandler.Find(m.id)
+	mem_ret, exists = testHandler.Find(m.ID)
 
 	if !exists {
-		t.Log("updated member with id", m.id, "wasn't returned")
+		t.Log("updated member with ID", m.ID, "wasn't returned")
 		t.Fail()
 	}
 
@@ -89,7 +90,7 @@ func TestSuspect(t * testing.T) {
 	testHandler := CreateMemoryMemberHandler()
 
 	m := GossipMember{
-		id:        50,
+		ID:        50,
 		heartbeat: 1,
 		lastheard: 1,
 	}
@@ -98,14 +99,14 @@ func TestSuspect(t * testing.T) {
 
   testHandler.MarkSuspected(10, 4)
 
-	mem_ret, exists := testHandler.Find(m.id)
+	mem_ret, exists := testHandler.Find(m.ID)
 
 	if !exists {
-		t.Log("member with id", m.id, "wasn't returned")
+		t.Log("member with ID", m.ID, "wasn't returned")
 		t.Fail()
 	}
 
-	if mem_ret.id != m.id {
+	if mem_ret.ID != m.ID {
 		t.Log("wrong member returned")
 		t.Fail()
 	}
@@ -122,12 +123,12 @@ func TestDelete(t *  testing.T) {
 	testHandler := CreateMemoryMemberHandler()
 
 	m := GossipMember{
-		id:        50,
+		ID:        50,
 		heartbeat: 1,
 		lastheard: 1,
 	}
 	m2 := GossipMember{
-		id:        51,
+		ID:        51,
 		heartbeat: 1,
 		lastheard: 1,
 	}
@@ -136,21 +137,21 @@ func TestDelete(t *  testing.T) {
 	testHandler.Add(m2)
 
 
-  testHandler.DeleteMember(m.id)
-  testHandler.DeleteMember(m2.id)
+  testHandler.DeleteMember(m.ID)
+  testHandler.DeleteMember(m2.ID)
 
 
-	_, exists := testHandler.Find(m.id)
+	_, exists := testHandler.Find(m.ID)
 
 	if exists {
-		t.Log("member with id", m.id, "was returned")
+		t.Log("member with ID", m.ID, "was returned")
 		t.Fail()
 	}
 
-	_, exists = testHandler.Find(m2.id)
+	_, exists = testHandler.Find(m2.ID)
 
 	if exists {
-		t.Log("member with id", m2.id, "was returned")
+		t.Log("member with ID", m2.ID, "was returned")
 		t.Fail()
 	}
   t.Log("now testing opposite deletion order")
@@ -159,20 +160,20 @@ func TestDelete(t *  testing.T) {
 	testHandler.Add(m)
 	testHandler.Add(m)
 
-  testHandler.DeleteMember(m2.id)
-  testHandler.DeleteMember(m.id)
+  testHandler.DeleteMember(m2.ID)
+  testHandler.DeleteMember(m.ID)
 
-	_, exists = testHandler.Find(m.id)
+	_, exists = testHandler.Find(m.ID)
 
 	if exists {
-		t.Log("member with id", m.id, "was returned")
+		t.Log("member with ID", m.ID, "was returned")
 		t.Fail()
 	}
 
-	_, exists = testHandler.Find(m2.id)
+	_, exists = testHandler.Find(m2.ID)
 
 	if exists {
-		t.Log("member with id", m2.id, "was returned")
+		t.Log("member with ID", m2.ID, "was returned")
 		t.Fail()
 	}
 
@@ -182,7 +183,7 @@ func TestExpire(t * testing.T) {
 	testHandler := CreateMemoryMemberHandler()
 
 	m := GossipMember{
-		id:        50,
+		ID:        50,
 		heartbeat: 1,
 		lastheard: 1,
 	}
@@ -191,51 +192,51 @@ func TestExpire(t * testing.T) {
 
   testHandler.DeleteExpired(10, 4)
 
-	_, exists := testHandler.Find(m.id)
+	_, exists := testHandler.Find(m.ID)
 
 	if exists {
-		t.Log("member with id", m.id, "wasn't deleted")
+		t.Log("member with ID", m.ID, "wasn't deleted")
 		t.Fail()
 	}
 }
 
-func TestUpdateMember (t * testing.T) {
-
+func TestGetN(t *testing.T) {
 
 	testHandler := CreateMemoryMemberHandler()
+  for i:= 0; i < 100; i++ {
+    m := GossipMember{
+      ID:        MemberID(i),
+      heartbeat: 1,
+      lastheard: 1,
+    }
+    testHandler.Add(m)
+  }
+  l := len(testHandler.GetMembers(10))
+  if l != 10 {
+    t.Log("didn't get enough random member, got",l, "wanted",10 )
+    t.Fail()
+  }
 
-	m := GossipMember{
-		id:        50,
-		heartbeat: 1,
-		lastheard: 1,
-	}
+  if len(testHandler.GetMembers(1000)) != 100 {
+    t.Log("got too many random members")
+  }
 
-  UpdateMember(&testHandler, m, 1)
+}
 
-	_, exists := testHandler.Find(m.id)
+func TestGetAll(t *testing.T) {
 
-	if !exists {
-		t.Log("member with id", m.id, "wasn't found")
-		t.Fail()
-	}
+	testHandler := CreateMemoryMemberHandler()
+  for i:= 0; i < 100; i++ {
+    m := GossipMember{
+      ID:        MemberID(i),
+      heartbeat: 1,
+      lastheard: 1,
+    }
+    testHandler.Add(m)
+  }
 
-  UpdateMember(&testHandler, m, 10)
-
-	mem, exists := testHandler.Find(m.id)
-
-	if !exists || mem.lastheard != 1 {
-		t.Log("member with id", m.id, "wasn't found with correct lastheard at, wanted",1,"got",mem.lastheard)
-		t.Fail()
-	}
-
-  m.heartbeat = 20
-  UpdateMember(&testHandler, m, 10)
-
-	mem, exists = testHandler.Find(m.id)
-
-	if !exists || mem.lastheard != 10 {
-		t.Log("member with id", m.id, "wasn't found with correct lastheard at, wanted",10,"got",mem.lastheard)
-		t.Fail()
-	}
+  if len(testHandler.GetAllMembers()) != 100 {
+    t.Log("didn't get enough random members")
+  }
 
 }

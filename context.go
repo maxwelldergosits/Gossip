@@ -1,12 +1,13 @@
 package gossip
 
+import "gossip/members"
 import "time"
 
 type GossipConf struct {
 	RoundLength time.Duration
 	SyncLength  time.Duration
 	RoundSize   uint
-	Self        GossipMember
+	Self        members.GossipMember
 	Connect     bool
 }
 
@@ -17,7 +18,6 @@ func createContext(conf GossipConf, outbound, received chan GossipMessage) (Goss
 		outboundMessages: outbound,
 		receivedMessages: received,
 		conf:             conf,
-		round:            0,
 	}, nil
 }
 
@@ -26,9 +26,11 @@ type GossipContext interface {
 	Outbound() chan Gossip
 	OutboundMessages() chan GossipMessage
 	ReceivedMessages() chan GossipMessage
-	MemberHandler() MemberHandler
 	Conf() GossipConf
-	Round() MemberHeartbeat
+	MemberHandler() members.MemberHandler
+	SetMemberHandler(members.MemberHandler)
+	SetRound(members.MemberHeartbeat)
+	Round()members.MemberHeartbeat
 }
 
 type DefaultGossipContext struct {
@@ -36,9 +38,9 @@ type DefaultGossipContext struct {
 	outbound         chan Gossip
 	outboundMessages chan GossipMessage
 	receivedMessages chan GossipMessage
-	memberHandler    MemberHandler
+	memberHandler    members.MemberHandler
 	conf             GossipConf
-	round            MemberHeartbeat
+	round            members.MemberHeartbeat
 }
 
 func (cxt *DefaultGossipContext) Inbound() chan Gossip {
@@ -48,8 +50,12 @@ func (cxt *DefaultGossipContext) Outbound() chan Gossip {
 	return cxt.outbound
 }
 
-func (cxt *DefaultGossipContext) MemberHandler() MemberHandler {
+func (cxt *DefaultGossipContext) MemberHandler() members.MemberHandler {
 	return cxt.memberHandler
+}
+
+func (cxt *DefaultGossipContext) SetMemberHandler(m  members.MemberHandler) {
+	cxt.memberHandler = m
 }
 
 func (cxt *DefaultGossipContext) OutboundMessages() chan GossipMessage {
@@ -64,6 +70,10 @@ func (cxt *DefaultGossipContext) Conf() GossipConf {
 	return cxt.conf
 }
 
-func (cxt *DefaultGossipContext) Round() MemberHeartbeat {
+func (cxt *DefaultGossipContext) Round() members.MemberHeartbeat {
 	return cxt.round
+}
+
+func (cxt *DefaultGossipContext) SetRound(r members.MemberHeartbeat) {
+	cxt.round = r
 }
