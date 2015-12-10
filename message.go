@@ -14,8 +14,8 @@ const (
 
 type Gossip struct {
 	Type    MessageType
-	message GossipMessage
-	members []GossipMember
+	Message GossipMessage
+	Members []GossipMember
 }
 
 func SerializeMessage(buffer bytes.Buffer, message Gossip) error {
@@ -23,28 +23,36 @@ func SerializeMessage(buffer bytes.Buffer, message Gossip) error {
 }
 
 /* send a message to other hosts */
-func sendMessage(cxt gossipContext, message GossipMessage) {
+func SendMessage(cxt GossipContext, message GossipMessage) {
 
 	cxt.Outbound() <- Gossip{
 		Type:    DataMessage,
-		message: message,
-		members: []GossipMember{},
+		Message: message,
+		Members: []GossipMember{},
 	}
 
 }
 
 /* internal message received from other gossip member */
-func handleMessage(cxt gossipContext, gossip Gossip) {
+func HandleMessage(cxt GossipContext, gossip Gossip) {
 
-	if gossip.message.To == cxt.Conf().Self {
-		cxt.ReceivedMessages() <- gossip.message
+	if gossip.Type == SyncRequest {
+		Sync(cxt, gossip.Message.From, DataMessage)
+	}
+
+	if gossip.Type == JoinRequest {
+		HandleJoin(cxt, gossip)
+	}
+
+	if gossip.Message.To == cxt.Conf().Self {
+		cxt.ReceivedMessages() <- gossip.Message
 	} else {
 		//forwardMessage(cxt, message)
 	}
 
-	updateMember(cxt.MemberHandler(), gossip.message.From)
-	for _, member := range gossip.members {
-		updateMember(cxt.MemberHandler(), member)
+	UpdateMember(cxt.MemberHandler(), gossip.Message.From, cxt.Round())
+	for _, member := range gossip.Members {
+		UpdateMember(cxt.MemberHandler(), member, cxt.Round())
 	}
 
 }

@@ -3,9 +3,9 @@ package gossip
 import "time"
 
 type GossipMessage struct {
-  To GossipMember
-  From GossipMember
-  payload []byte
+	To      GossipMember
+	From    GossipMember
+	Payload []byte
 }
 
 func StartGossip(conf GossipConf) (received, outbound chan GossipMessage, err error) {
@@ -21,26 +21,26 @@ func StartGossip(conf GossipConf) (received, outbound chan GossipMessage, err er
 	return received, outbound, nil
 }
 
-func startGossip(cxt gossipContext) {
+func startGossip(cxt GossipContext) {
 
 	for {
 
 		select {
 		/* normal state stuff*/
 		case _ = <-time.Tick(cxt.Conf().RoundLength):
-			round(cxt)
+			SendRoundMessage(cxt)
 
 			/* state sync */
 		case _ = <-time.Tick(cxt.Conf().SyncLength):
-			requestSync(cxt)
+			RequestSync(cxt)
 
 		/* handle new message as they come in */
 		case msg := <-cxt.Inbound():
-			handleMessage(cxt, msg)
+			HandleMessage(cxt, msg)
 
 		/* send a message from the localhost */
 		case msg := <-cxt.OutboundMessages():
-			sendMessage(cxt, msg)
+			SendMessage(cxt, msg)
 
 		}
 	}

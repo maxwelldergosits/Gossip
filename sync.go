@@ -1,39 +1,27 @@
 package gossip
 
-func requestSync(cxt gossipContext) {
+// Choose a random member to sync with
+func RequestSync(cxt GossipContext) {
 
 	members := cxt.MemberHandler().GetMembers(1)
 
-  // ask members[0] for all of its info
-	msg := Gossip{
-		Type: SyncRequest,
-		message: GossipMessage{
-			To:   members[0],
-			From: cxt.Conf().Self,
-		},
-	}
-
-	cxt.Outbound() <- msg
-
-
-  // send all of your info to members[0]
-  sync(cxt, members[0])
+	// send all of your info to members[0]
+	Sync(cxt, members[0], SyncRequest)
 
 }
 
-
 // Send all members to m
-func sync(cxt gossipContext, m GossipMember) {
+func Sync(cxt GossipContext, m GossipMember, t MessageType) {
 
 	members := cxt.MemberHandler().GetAllMembers()
 
 	msg := Gossip{
-		Type: SyncRequest,
-		message: GossipMessage{
+		Type: t,
+		Message: GossipMessage{
 			To:   m,
 			From: cxt.Conf().Self,
 		},
-    members: members,
+		Members: members,
 	}
 
 	cxt.Outbound() <- msg

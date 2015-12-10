@@ -7,24 +7,28 @@ type GossipConf struct {
 	SyncLength  time.Duration
 	RoundSize   uint
 	Self        GossipMember
+	Connect     bool
 }
 
-func createContext(conf GossipConf, outbound, received chan GossipMessage) (gossipContext, error) {
+func createContext(conf GossipConf, outbound, received chan GossipMessage) (GossipContext, error) {
 	return &DefaultGossipContext{
 		outbound:         make(chan Gossip, 1000),
 		inbound:          make(chan Gossip, 1000),
 		outboundMessages: outbound,
 		receivedMessages: received,
-		conf:             conf}, nil
+		conf:             conf,
+		round:            0,
+	}, nil
 }
 
-type gossipContext interface {
+type GossipContext interface {
 	Inbound() chan Gossip
 	Outbound() chan Gossip
 	OutboundMessages() chan GossipMessage
 	ReceivedMessages() chan GossipMessage
 	MemberHandler() MemberHandler
 	Conf() GossipConf
+	Round() MemberHeartbeat
 }
 
 type DefaultGossipContext struct {
@@ -34,6 +38,7 @@ type DefaultGossipContext struct {
 	receivedMessages chan GossipMessage
 	memberHandler    MemberHandler
 	conf             GossipConf
+	round            MemberHeartbeat
 }
 
 func (cxt *DefaultGossipContext) Inbound() chan Gossip {
@@ -57,4 +62,8 @@ func (cxt *DefaultGossipContext) ReceivedMessages() chan GossipMessage {
 
 func (cxt *DefaultGossipContext) Conf() GossipConf {
 	return cxt.conf
+}
+
+func (cxt *DefaultGossipContext) Round() MemberHeartbeat {
+	return cxt.round
 }
