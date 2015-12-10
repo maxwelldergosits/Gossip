@@ -9,19 +9,6 @@ type GossipMessage struct {
 	Payload []byte
 }
 
-func StartGossip(conf GossipConf) (received, outbound chan GossipMessage, err error) {
-
-	// open files, listen on sockets, etc
-	cxt, err := createContext(conf, received, outbound)
-	if err != nil {
-		return received, outbound, err
-	}
-
-	go startGossip(cxt)
-
-	return received, outbound, nil
-}
-
 func startGossip(cxt GossipContext) {
 
 	for {

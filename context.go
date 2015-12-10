@@ -11,7 +11,7 @@ type GossipConf struct {
 	Connect     bool
 }
 
-func createContext(conf GossipConf, outbound, received chan GossipMessage) (GossipContext, error) {
+func createContext(conf GossipConf, outbound, received chan GossipMessage) (*DefaultGossipContext, error) {
 	return &DefaultGossipContext{
 		outbound:         make(chan Gossip, 1000),
 		inbound:          make(chan Gossip, 1000),
@@ -22,15 +22,15 @@ func createContext(conf GossipConf, outbound, received chan GossipMessage) (Goss
 }
 
 type GossipContext interface {
-	Inbound() chan Gossip
-	Outbound() chan Gossip
+	Inbound() <-chan Gossip
+	Outbound() chan<- Gossip
 	OutboundMessages() chan GossipMessage
 	ReceivedMessages() chan GossipMessage
 	Conf() GossipConf
 	MemberHandler() members.MemberHandler
 	SetMemberHandler(members.MemberHandler)
 	SetRound(members.MemberHeartbeat)
-	Round()members.MemberHeartbeat
+	Round() members.MemberHeartbeat
 }
 
 type DefaultGossipContext struct {
@@ -43,10 +43,10 @@ type DefaultGossipContext struct {
 	round            members.MemberHeartbeat
 }
 
-func (cxt *DefaultGossipContext) Inbound() chan Gossip {
+func (cxt *DefaultGossipContext) Inbound() <-chan Gossip {
 	return cxt.inbound
 }
-func (cxt *DefaultGossipContext) Outbound() chan Gossip {
+func (cxt *DefaultGossipContext) Outbound() chan<- Gossip {
 	return cxt.outbound
 }
 
@@ -54,7 +54,7 @@ func (cxt *DefaultGossipContext) MemberHandler() members.MemberHandler {
 	return cxt.memberHandler
 }
 
-func (cxt *DefaultGossipContext) SetMemberHandler(m  members.MemberHandler) {
+func (cxt *DefaultGossipContext) SetMemberHandler(m members.MemberHandler) {
 	cxt.memberHandler = m
 }
 
