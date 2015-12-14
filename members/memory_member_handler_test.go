@@ -7,8 +7,8 @@ func TestAdd(t *testing.T) {
 	testHandler := CreateMemoryMemberHandler()
 	m := GossipMember{
 		ID:        NewID(50, 0),
-		heartbeat: 1,
-		lastheard: 1,
+		Heartbeat: 1,
+		Lastheard: 1,
 	}
 
 	testHandler.Add(m)
@@ -48,8 +48,8 @@ func TestUpdate(t *testing.T) {
 	testHandler := CreateMemoryMemberHandler()
 	m := GossipMember{
 		ID:        NewID(50, 0),
-		heartbeat: 1,
-		lastheard: 1,
+		Heartbeat: 1,
+		Lastheard: 1,
 	}
 
 	testHandler.Add(m)
@@ -66,8 +66,8 @@ func TestUpdate(t *testing.T) {
 		t.Fail()
 	}
 
-	m.heartbeat += 1
-	m.lastheard += 1
+	m.Heartbeat += 1
+	m.Lastheard += 1
 
 	testHandler.Add(m)
 
@@ -90,8 +90,8 @@ func TestSuspect(t *testing.T) {
 
 	m := GossipMember{
 		ID:        NewID(50, 0),
-		heartbeat: 1,
-		lastheard: 1,
+		Heartbeat: 1,
+		Lastheard: 1,
 	}
 
 	testHandler.Add(m)
@@ -110,8 +110,8 @@ func TestSuspect(t *testing.T) {
 		t.Fail()
 	}
 
-	if mem_ret.status != MemberSuspected {
-		t.Log("wrong status returned")
+	if mem_ret.Status != MemberSuspected {
+		t.Log("wrong Status returned")
 		t.Fail()
 	}
 
@@ -123,13 +123,13 @@ func TestDelete(t *testing.T) {
 
 	m := GossipMember{
 		ID:        NewID(50, 0),
-		heartbeat: 1,
-		lastheard: 1,
+		Heartbeat: 1,
+		Lastheard: 1,
 	}
 	m2 := GossipMember{
 		ID:        NewID(51, 0),
-		heartbeat: 1,
-		lastheard: 1,
+		Heartbeat: 1,
+		Lastheard: 1,
 	}
 
 	testHandler.Add(m)
@@ -181,8 +181,8 @@ func TestExpire(t *testing.T) {
 
 	m := GossipMember{
 		ID:        NewID(50, 0),
-		heartbeat: 1,
-		lastheard: 1,
+		Heartbeat: 1,
+		Lastheard: 1,
 	}
 
 	testHandler.Add(m)
@@ -203,8 +203,8 @@ func TestGetN(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		m := GossipMember{
 			ID:        NewID(uint64(i), 0),
-			heartbeat: 1,
-			lastheard: 1,
+			Heartbeat: 1,
+			Lastheard: 1,
 		}
 		testHandler.Add(m)
 	}
@@ -235,8 +235,8 @@ func TestGetAll(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		m := GossipMember{
 			ID:        NewID(uint64(i), 0),
-			heartbeat: 1,
-			lastheard: 1,
+			Heartbeat: 1,
+			Lastheard: 1,
 		}
 		testHandler.Add(m)
 	}

@@ -1,0 +1,28 @@
+<script type="text/javascript" src="/jquery.js"></script>
+<html><body>
+<h1>Gossip System Status<h1>
+<table id="ta">
+</table>
+</body></html>
+<script>
+
+function makeTable(data) {
+  var a = "";
+  for (var prop in data) {
+    if (data.hasOwnProperty(prop)) {
+      a = a + "<tr id="+prop+"><td width=350px>"+prop+"</td>";
+      a = a + "<td width=350px>"+data[prop].Heartbeat+"</td></tr>";
+    }
+  }
+  return a;
+}
+
+function reload() {
+$.get( "/data.json", function( data ) {
+  var mydata = JSON.parse(data);
+  document.getElementById("ta").innerHTML = makeTable(mydata);
+});
+  setTimeout(reload, 2000);
+}
+reload();
+</script>

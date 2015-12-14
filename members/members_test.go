@@ -8,8 +8,8 @@ func TestUpdateMember(t *testing.T) {
 
 	m := GossipMember{
 		ID:        NewID(50, 0),
-		heartbeat: 1,
-		lastheard: 1,
+		Heartbeat: 1,
+		Lastheard: 1,
 	}
 
 	UpdateMember(&testHandler, m, 1)
@@ -25,18 +25,18 @@ func TestUpdateMember(t *testing.T) {
 
 	mem, exists := testHandler.Find(m.ID)
 
-	if !exists || mem.lastheard != 1 {
-		t.Log("member with ID", m.ID, "wasn't found with correct lastheard at, wanted", 1, "got", mem.lastheard)
+	if !exists || mem.Lastheard != 1 {
+		t.Log("member with ID", m.ID, "wasn't found with correct Lastheard at, wanted", 1, "got", mem.Lastheard)
 		t.Fail()
 	}
 
-	m.heartbeat = 20
+	m.Heartbeat = 20
 	UpdateMember(&testHandler, m, 10)
 
 	mem, exists = testHandler.Find(m.ID)
 
-	if !exists || mem.lastheard != 10 {
-		t.Log("member with ID", m.ID, "wasn't found with correct lastheard at, wanted", 10, "got", mem.lastheard)
+	if !exists || mem.Lastheard != 10 {
+		t.Log("member with ID", m.ID, "wasn't found with correct Lastheard at, wanted", 10, "got", mem.Lastheard)
 		t.Fail()
 	}
 

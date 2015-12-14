@@ -9,18 +9,21 @@ type GossipMessage struct {
 	Payload []byte
 }
 
-func startGossip(cxt GossipContext) {
+func RunGossip(cxt GossipContext) {
 
 	for {
 
 		select {
 		/* normal state stuff*/
 		case _ = <-time.Tick(cxt.Conf().RoundLength):
+			cxt.MemberHandler().DeleteExpired(cxt.Conf().Self.Heartbeat, cxt.Conf().ExpireThreshold)
+			cxt.MemberHandler().MarkSuspected(cxt.Conf().Self.Heartbeat, cxt.Conf().SuspectedThreshold)
+			cxt.Conf().Self.Heartbeat += 1
 			SendRoundMessage(cxt)
 
 			/* state sync */
 		case _ = <-time.Tick(cxt.Conf().SyncLength):
-			cxt.Outbound() <- RequestSync(cxt)
+			RequestSync(cxt)
 
 		/* handle new message as they come in */
 		case gossip := <-cxt.Inbound():

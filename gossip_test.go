@@ -12,23 +12,24 @@ func TestRound(t *testing.T) {
 		RoundLength: time.Duration(100 * time.Millisecond),
 		SyncLength:  time.Duration(1000000 * time.Millisecond),
 		RoundSize:   20,
-		Self:        members.GossipMember{ID: members.NewID(40000,0)},
+		Self:        members.GossipMember{ID: members.NewID(40000, 0)},
 	}
 
 	rec := make(chan GossipMessage, 1000)
 	out := make(chan GossipMessage, 1000)
-	cxt, _ := createContext(conf, rec, out)
+	cxt, _ := CreateContext(conf, rec, out)
 	h := members.CreateMemoryMemberHandler()
 	for i := 0; i < 1000; i++ {
-		h.Add(members.GossipMember{ID: members.NewID(uint64(i),0)})
+		h.Add(members.GossipMember{ID: members.NewID(uint64(i), 0)})
 	}
 	cxt.SetMemberHandler(&h)
-	go startGossip(cxt)
+
+	go RunGossip(cxt)
 
 	var msg Gossip
 	gotMessage := false
 	select {
-	case msg = <-cxt.outbound:
+	case msg = <-cxt.OutboundChannel:
 		gotMessage = true
 	case _ = <-time.Tick(conf.RoundLength * 2):
 		gotMessage = false
@@ -41,7 +42,10 @@ func TestRound(t *testing.T) {
 		t.Log("len(msg.Members) wrong, got", len(msg.Members), "wanted 20")
 		t.Fail()
 	}
-
+	if msg.Message.From.Heartbeat != 1 {
+		t.Log("wrong hb")
+		t.Fail()
+	}
 }
 
 func TestEmptyRound(t *testing.T) {
@@ -50,19 +54,19 @@ func TestEmptyRound(t *testing.T) {
 		RoundLength: time.Duration(100 * time.Millisecond),
 		SyncLength:  time.Duration(1000000 * time.Millisecond),
 		RoundSize:   20,
-		Self:        members.GossipMember{ID: members.NewID(40000,0)},
+		Self:        members.GossipMember{ID: members.NewID(40000, 0)},
 	}
 
 	rec := make(chan GossipMessage, 1000)
 	out := make(chan GossipMessage, 1000)
-	cxt, _ := createContext(conf, rec, out)
+	cxt, _ := CreateContext(conf, rec, out)
 	h := members.CreateMemoryMemberHandler()
 	cxt.SetMemberHandler(&h)
-	go startGossip(cxt)
+	go RunGossip(cxt)
 
 	gotMessage := false
 	select {
-	case _ = <-cxt.outbound:
+	case _ = <-cxt.OutboundChannel:
 		gotMessage = true
 	case _ = <-time.Tick(conf.RoundLength * 2):
 		gotMessage = false
@@ -80,24 +84,24 @@ func TestSyncGossip(t *testing.T) {
 		RoundLength: time.Duration(1000000000 * time.Millisecond),
 		SyncLength:  time.Duration(100 * time.Millisecond),
 		RoundSize:   20,
-		Self:        members.GossipMember{ID: members.NewID(40000,0)},
+		Self:        members.GossipMember{ID: members.NewID(40000, 0)},
 	}
 
 	rec := make(chan GossipMessage, 1000)
 	out := make(chan GossipMessage, 1000)
-	cxt, _ := createContext(conf, rec, out)
+	cxt, _ := CreateContext(conf, rec, out)
 	h := members.CreateMemoryMemberHandler()
 	for i := 0; i < 1000; i++ {
-		h.Add(members.GossipMember{ID: members.NewID(uint64(i),0)})
+		h.Add(members.GossipMember{ID: members.NewID(uint64(i), 0)})
 	}
 	cxt.SetMemberHandler(&h)
-	go startGossip(cxt)
+	go RunGossip(cxt)
 
 	var msg Gossip
 	gotMessage := false
 
 	select {
-	case msg = <-cxt.outbound:
+	case msg = <-cxt.OutboundChannel:
 		gotMessage = true
 	case _ = <-time.Tick(conf.RoundLength * 2):
 		gotMessage = false
@@ -126,30 +130,30 @@ func TestGetSyncRequest(t *testing.T) {
 		RoundLength: time.Duration(1000000000 * time.Millisecond),
 		SyncLength:  time.Duration(1000000000 * time.Millisecond),
 		RoundSize:   20,
-		Self:        members.GossipMember{ID: members.NewID(40000,0)},
+		Self:        members.GossipMember{ID: members.NewID(40000, 0)},
 	}
 
 	rec := make(chan GossipMessage, 1000)
 	out := make(chan GossipMessage, 1000)
 
-	cxt, _ := createContext(conf, rec, out)
+	cxt, _ := CreateContext(conf, rec, out)
 	h := members.CreateMemoryMemberHandler()
 	for i := 0; i < 1000; i++ {
-		h.Add(members.GossipMember{ID: members.NewID(uint64(i),0)})
+		h.Add(members.GossipMember{ID: members.NewID(uint64(i), 0)})
 	}
 	cxt.SetMemberHandler(&h)
 
 	msg := Gossip{
 		Type: SyncRequest,
 	}
-	cxt.inbound <- msg
+	cxt.InboundChannel <- msg
 
-	go startGossip(cxt)
+	go RunGossip(cxt)
 
 	gotMessage := false
 
 	select {
-	case msg = <-cxt.outbound:
+	case msg = <-cxt.OutboundChannel:
 		gotMessage = true
 	case _ = <-time.Tick(conf.RoundLength * 2):
 		gotMessage = false
@@ -178,30 +182,30 @@ func TestGetJoinRequest(t *testing.T) {
 		RoundLength: time.Duration(1000000000 * time.Millisecond),
 		SyncLength:  time.Duration(1000000000 * time.Millisecond),
 		RoundSize:   20,
-		Self:        members.GossipMember{ID: members.NewID(40000,0)},
+		Self:        members.GossipMember{ID: members.NewID(40000, 0)},
 	}
 
 	rec := make(chan GossipMessage, 1000)
 	out := make(chan GossipMessage, 1000)
 
-	cxt, _ := createContext(conf, rec, out)
+	cxt, _ := CreateContext(conf, rec, out)
 	h := members.CreateMemoryMemberHandler()
 	for i := 0; i < 1000; i++ {
-		h.Add(members.GossipMember{ID: members.NewID(uint64(i),0)})
+		h.Add(members.GossipMember{ID: members.NewID(uint64(i), 0)})
 	}
 	cxt.SetMemberHandler(&h)
 
 	msg := Gossip{
 		Type: JoinRequest,
 	}
-	cxt.inbound <- msg
+	cxt.InboundChannel <- msg
 
-	go startGossip(cxt)
+	go RunGossip(cxt)
 
 	gotMessage := false
 
 	select {
-	case msg = <-cxt.outbound:
+	case msg = <-cxt.OutboundChannel:
 		gotMessage = true
 	case _ = <-time.Tick(conf.RoundLength * 2):
 		gotMessage = false
@@ -230,36 +234,36 @@ func TestReceive(t *testing.T) {
 		RoundLength: time.Duration(1000000000 * time.Millisecond),
 		SyncLength:  time.Duration(1000000000 * time.Millisecond),
 		RoundSize:   20,
-		Self:        members.GossipMember{ID: members.NewID(40000,0)},
+		Self:        members.GossipMember{ID: members.NewID(40000, 0)},
 	}
 
 	rec := make(chan GossipMessage, 1000)
 	out := make(chan GossipMessage, 1000)
 
-	cxt, _ := createContext(conf, rec, out)
+	cxt, _ := CreateContext(conf, rec, out)
 	h := members.CreateMemoryMemberHandler()
 	for i := 0; i < 1000; i++ {
-		h.Add(members.GossipMember{ID: members.NewID(uint64(i),0)})
+		h.Add(members.GossipMember{ID: members.NewID(uint64(i), 0)})
 	}
 	cxt.SetMemberHandler(&h)
 
 	msg := Gossip{
 		Type:    DataMessage,
-		Members: []members.GossipMember{members.GossipMember{ID: members.NewID(20000,0)}},
-		Message: GossipMessage{From: members.GossipMember{ID: members.NewID(20001,0)}},
+		Members: []members.GossipMember{members.GossipMember{ID: members.NewID(20000, 0)}},
+		Message: GossipMessage{From: members.GossipMember{ID: members.NewID(20001, 0)}},
 	}
-	cxt.inbound <- msg
+	cxt.InboundChannel <- msg
 
-	go startGossip(cxt)
+	go RunGossip(cxt)
 
 	_ = <-time.Tick(2 * time.Millisecond)
 
-	_, exists := cxt.MemberHandler().Find(members.NewID(20000,0))
+	_, exists := cxt.MemberHandler().Find(members.NewID(20000, 0))
 	if !exists {
 		t.Log("Member with ID 20000 not found")
 		t.Fail()
 	}
-	_, exists = cxt.MemberHandler().Find(members.NewID(20001,0))
+	_, exists = cxt.MemberHandler().Find(members.NewID(20001, 0))
 	if !exists {
 		t.Log("Member with ID 20001 not found")
 		t.Fail()
@@ -273,36 +277,36 @@ func TestReceiveMessage(t *testing.T) {
 		RoundLength: time.Duration(1000000000 * time.Millisecond),
 		SyncLength:  time.Duration(1000000000 * time.Millisecond),
 		RoundSize:   20,
-		Self:        members.GossipMember{ID: members.NewID(40000,0)},
+		Self:        members.GossipMember{ID: members.NewID(40000, 0)},
 	}
 
 	rec := make(chan GossipMessage, 1000)
 	out := make(chan GossipMessage, 1000)
 
-	cxt, _ := createContext(conf, out, rec)
+	cxt, _ := CreateContext(conf, out, rec)
 	h := members.CreateMemoryMemberHandler()
 	for i := 0; i < 1000; i++ {
-		h.Add(members.GossipMember{ID: members.NewID(uint64(i),0)})
+		h.Add(members.GossipMember{ID: members.NewID(uint64(i), 0)})
 	}
 	cxt.SetMemberHandler(&h)
 
 	msg := Gossip{
 		Type: DataMessage,
 		Message: GossipMessage{
-			From:    members.GossipMember{ID: members.NewID(20001,0)},
-			To:      members.GossipMember{ID: members.NewID(40000,0)},
+			From:    members.GossipMember{ID: members.NewID(20001, 0)},
+			To:      members.GossipMember{ID: members.NewID(40000, 0)},
 			Payload: []byte{1, 2},
 		},
 	}
-	cxt.inbound <- msg
+	cxt.InboundChannel <- msg
 
-	go startGossip(cxt)
+	go RunGossip(cxt)
 
 	// wait 2 millis
 	var newMsg GossipMessage
 	select {
 	case newMsg = <-rec:
-		if (newMsg.From != members.GossipMember{ID: members.NewID(20001,0)}) || (newMsg.To != members.GossipMember{ID: members.NewID(40000,0)}) {
+		if (newMsg.From != members.GossipMember{ID: members.NewID(20001, 0)}) || (newMsg.To != members.GossipMember{ID: members.NewID(40000, 0)}) {
 			t.Log("got wrong message!")
 			t.Fail()
 		}
@@ -322,32 +326,32 @@ func TestSendMessage(t *testing.T) {
 		RoundLength: time.Duration(1000000000 * time.Millisecond),
 		SyncLength:  time.Duration(1000000000 * time.Millisecond),
 		RoundSize:   20,
-		Self:        members.GossipMember{ID: members.NewID(40000,0)},
+		Self:        members.GossipMember{ID: members.NewID(40000, 0)},
 	}
 
 	rec := make(chan GossipMessage, 1000)
 	out := make(chan GossipMessage, 1000)
 
-	cxt, _ := createContext(conf, out, rec)
+	cxt, _ := CreateContext(conf, out, rec)
 	h := members.CreateMemoryMemberHandler()
 	for i := 0; i < 1000; i++ {
-		h.Add(members.GossipMember{ID: members.NewID(uint64(i),0)})
+		h.Add(members.GossipMember{ID: members.NewID(uint64(i), 0)})
 	}
 	cxt.SetMemberHandler(&h)
 
 	out <- GossipMessage{
-		From:    members.GossipMember{ID: members.NewID(40000,0)},
-		To:      members.GossipMember{ID: members.NewID(20001,0)},
+		From:    members.GossipMember{ID: members.NewID(40000, 0)},
+		To:      members.GossipMember{ID: members.NewID(20001, 0)},
 		Payload: []byte{1, 2},
 	}
 
-	go startGossip(cxt)
+	go RunGossip(cxt)
 
 	// wait 2 millis
 	var newMsg Gossip
 	select {
-	case newMsg = <-cxt.outbound:
-		if (newMsg.Message.From != members.GossipMember{ID: members.NewID(40000,0)}) || (newMsg.Message.To != members.GossipMember{ID: members.NewID(20001,0)}) {
+	case newMsg = <-cxt.OutboundChannel:
+		if (newMsg.Message.From != members.GossipMember{ID: members.NewID(40000, 0)}) || (newMsg.Message.To != members.GossipMember{ID: members.NewID(20001, 0)}) {
 			t.Log("got wrong message!")
 			t.Fail()
 		}

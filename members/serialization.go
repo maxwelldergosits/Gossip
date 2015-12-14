@@ -4,9 +4,9 @@ import "bytes"
 import "encoding/binary"
 
 func (m *GossipMember) ToBytes(b *bytes.Buffer) {
-	binary.Write(b, binary.BigEndian, m.ID.upper)
-	binary.Write(b, binary.BigEndian, m.ID.lower)
-	binary.Write(b, binary.BigEndian, m.heartbeat)
+	binary.Write(b, binary.BigEndian, m.ID.Upper)
+	binary.Write(b, binary.BigEndian, m.ID.Lower)
+	binary.Write(b, binary.BigEndian, m.Heartbeat)
 	m.Address.ToBytes(b)
 }
 
@@ -17,9 +17,9 @@ func (m *MemberAddress) ToBytes(b *bytes.Buffer) {
 }
 
 func (m *GossipMember) FromBytes(b *bytes.Buffer) error {
-	binary.Read(b, binary.BigEndian, &m.ID.upper)
-	binary.Read(b, binary.BigEndian, &m.ID.lower)
-	binary.Read(b, binary.BigEndian, &m.heartbeat)
+	binary.Read(b, binary.BigEndian, &m.ID.Upper)
+	binary.Read(b, binary.BigEndian, &m.ID.Lower)
+	binary.Read(b, binary.BigEndian, &m.Heartbeat)
 	return m.Address.FromBytes(b)
 }
 

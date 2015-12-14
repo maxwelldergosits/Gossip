@@ -12,7 +12,7 @@ func TestGossipContext(t *testing.T) {
 	h := members.CreateMemoryMemberHandler()
 	r := members.MemberHeartbeat(1)
 
-	cxt, err := createContext(c, xm, ym)
+	cxt, err := CreateContext(c, xm, ym)
 
 	if err != nil {
 		t.Log("err != nil", err.Error())
@@ -22,12 +22,6 @@ func TestGossipContext(t *testing.T) {
 	cxt.SetMemberHandler(&h)
 	cxt.SetRound(r)
 
-  if cxt.Outbound() != cxt.outbound {
-		t.Fail()
-  }
-  if cxt.Inbound() != cxt.inbound {
-		t.Fail()
-  }
 	if cxt.OutboundMessages() != xm {
 		t.Fail()
 	}
@@ -37,7 +31,7 @@ func TestGossipContext(t *testing.T) {
 	if cxt.MemberHandler() != &h {
 		t.Fail()
 	}
-	if cxt.Conf() != c {
+	if cxt.Conf() != &cxt.conf {
 		t.Fail()
 	}
 	if cxt.Round() != r {

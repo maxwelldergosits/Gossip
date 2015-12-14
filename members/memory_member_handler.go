@@ -1,6 +1,7 @@
 package members
 
 import "math/rand"
+import "time"
 
 type mmhEntry struct {
 	member GossipMember
@@ -47,8 +48,8 @@ func (m *MemoryMemberHandler) Find(ID MemberID) (GossipMember, bool) {
 
 func (m *MemoryMemberHandler) MarkSuspected(round, suspectedThreshold MemberHeartbeat) {
 	for _, val := range m.table {
-		if round-val.member.lastheard > suspectedThreshold {
-			val.member.status = MemberSuspected
+		if round-val.member.Lastheard > suspectedThreshold {
+			val.member.Status = MemberSuspected
 		}
 	}
 }
@@ -70,7 +71,7 @@ func (m *MemoryMemberHandler) DeleteMember(ID MemberID) {
 func (m *MemoryMemberHandler) DeleteExpired(round, expireThreshold MemberHeartbeat) {
 	dead := make([]MemberID, 1000)
 	for _, val := range m.table {
-		if round-val.member.lastheard > expireThreshold {
+		if round-val.member.Lastheard > expireThreshold {
 			dead = append(dead, val.member.ID)
 		}
 	}
@@ -83,7 +84,7 @@ func (m *MemoryMemberHandler) GetMembers(n uint) []GossipMember {
 	if n > uint(len(m.list)) {
 		n = uint(len(m.list))
 	}
-	r := rand.New(rand.NewSource(99))
+	r := rand.New(rand.NewSource(time.Now().Unix()))
 	members := make([]GossipMember, 0, n)
 	var i uint = 0
 	for ; i < n; i++ {
@@ -101,4 +102,8 @@ func (m *MemoryMemberHandler) GetAllMembers() []GossipMember {
 		members = append(members, v.member)
 	}
 	return members
+}
+
+func (m *MemoryMemberHandler) NumberOfMembers() int {
+  return len(m.list)
 }
