@@ -3,7 +3,6 @@ package gossip
 import "bytes"
 import "encoding/binary"
 import "gossip/members"
-
 func (gm *GossipMessage) ToBytes(buf *bytes.Buffer) {
 	gm.From.ToBytes(buf)
 	gm.To.ToBytes(buf)
@@ -31,13 +30,15 @@ func (gm *GossipMessage) FromBytes(buf *bytes.Buffer) {
 
 func (g *Gossip) FromBytes(buf *bytes.Buffer) {
 	var Type uint64
-	binary.Write(buf, binary.BigEndian, &Type)
+	binary.Read(buf, binary.BigEndian, &Type)
 	g.Type = MessageType(Type)
 	g.Message.FromBytes(buf)
 	var nMembers uint64
-	binary.Read(buf, binary.BigEndian, uint64(len(g.Members)))
+  binary.Read(buf, binary.BigEndian, &nMembers)
 	g.Members = make([]members.GossipMember, nMembers, nMembers)
-	for _, m := range g.Members {
-		m.FromBytes(buf)
+	for i, _ := range g.Members {
+    var mem members.GossipMember
+		mem.FromBytes(buf)
+    g.Members[i] = mem
 	}
 }
