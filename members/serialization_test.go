@@ -7,9 +7,8 @@ func TestSerialization(t *testing.T) {
 	var buf bytes.Buffer
 	m := GossipMember{
 		ID:        NewID(50, 50),
-		heartbeat: 50,
-		Address: MemberAddress{
-			IP:      0x12345678,
+			Address: MemberAddress {
+      IP:      [4]byte{0x12,0x34,0x56,0x78},
 			UDPPort: 0x5454,
 			TCPPort: 0x4545,
 		},

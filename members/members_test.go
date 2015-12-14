@@ -45,7 +45,7 @@ func TestUpdateMember(t *testing.T) {
 func TestNewID(t *testing.T) {
 
 	m := NewID(1, 2)
-	if m.upper != 1 || m.lower != 2 {
+	if m.Upper != 1 || m.Lower != 2 {
 		t.Fail()
 	}
 }

@@ -22,7 +22,7 @@ func NewID(up, lo uint64) MemberID {
 
 // FOR NOW IPV4 only
 type MemberAddress struct {
-	IP      uint32
+	IP      [4]byte
 	UDPPort uint16
 	TCPPort uint16
 }

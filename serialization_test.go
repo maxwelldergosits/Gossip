@@ -46,8 +46,6 @@ func TestGossipMessage(t *testing.T) {
 	}
 }
 
-
-
 func TestGossipSerialization(t *testing.T) {
 
 	gm := GossipMessage{
@@ -60,23 +58,23 @@ func TestGossipSerialization(t *testing.T) {
 		Payload: []byte{1, 2, 3, 4, 5},
 	}
 
-  g := Gossip {
-    Type: DataMessage,
-    Message: gm,
-    Members: make([]members.GossipMember,10,10),
-  }
+	g := Gossip{
+		Type:    DataMessage,
+		Message: gm,
+		Members: make([]members.GossipMember, 10, 10),
+	}
 
-  for i:=0; i< 10; i++ {
-    g.Members[i] = members.GossipMember {ID: members.NewID(uint64(i), uint64(i)) }
-  }
+	for i := 0; i < 10; i++ {
+		g.Members[i] = members.GossipMember{ID: members.NewID(uint64(i), uint64(i))}
+	}
 
 	var buf bytes.Buffer
 
 	g.ToBytes(&buf)
 
-  var g2 Gossip
+	var g2 Gossip
 
-  g2.FromBytes(&buf)
+	g2.FromBytes(&buf)
 
 	if g.Type != g2.Type {
 		t.Log("g.Type != g2.Type")
@@ -84,18 +82,18 @@ func TestGossipSerialization(t *testing.T) {
 	}
 
 	if len(g.Members) != len(g2.Members) {
-		t.Log("len(g.Members)",len(g.Members)," != len(g2.Members", len(g2.Members))
+		t.Log("len(g.Members)", len(g.Members), " != len(g2.Members", len(g2.Members))
 		t.Fail()
 	} else {
 		for i := range g.Members {
 			if g.Members[i] != g2.Members[i] {
-				t.Log("g.Members[", i, "] =",g.Members[i])
-				t.Log("g2.Members[", i, "] =",g2.Members[i])
+				t.Log("g.Members[", i, "] =", g.Members[i])
+				t.Log("g2.Members[", i, "] =", g2.Members[i])
 				t.Log("g.Members[", i, "] != g2.Members[", i, "]")
 				t.Fail()
 			}
 		}
-  }
+	}
 
 	gm2 := g2.Message
 
